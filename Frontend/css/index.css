@@ -1,0 +1,42 @@
+.myCanvas {
+    background-color: #eee;
+    border: 1px solid black;
+    border-radius: 15px;
+    transition: all 0.3s;
+    /* width: 500px;
+    height: 500px; */
+}
+
+.h80 {
+    height: 80%;
+}
+
+.draw-area {
+    width: fit-content;
+    height: fit-content;
+}
+
+.circle-stick,
+.circle-stick1 {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    right: 10px;
+    top: 20px;
+    border-radius: 50%;
+    background-color: blue;
+}
+
+.circle-stick1 {
+    z-index: 1;
+    pointer-events: none;
+}
+
+.circle-stick {
+    z-index: 10;
+}
+
+.content {
+    height: 80%;
+    overflow-y: auto;
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="./css/index.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<body>
+
+    <div ng-app="myApp" ng-controller="myCtrl">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h1>TEXT</h1>
+                    <div class="form-group position-relative h80">
+                        <input ng-keyup="onSubmit($event)" type="text" class="form-control mt-3" placeholder="Input Command ...">
+                        <div class="content">
+                            <div ng-repeat="vec in vector">
+                                <span ng-if="vec.header == 'Node'">
+                                    Node {{vec.sym1}}
+                                </span>
+                                <span ng-if="vec.header == 'Link'">
+                                    Link {{vec.sym1}} {{vec.sym2}}
+                                </span>
+                                <span ng-click="onDeleteClicked(vec)" class="float-right">
+                                    <i class="fa fa-remove"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <h1>DRAW</h1>
+                    <div class="position-relative draw-area">
+                        <canvas class="myCanvas" class="mt-4" ng-mousedown="onCanvasMouseDown($event)" ng-mousemove="onMouseMove($event)" ng-mouseup="onCanvasMouseUp($event)" width="500px" height="500px"></canvas>
+                        <div class="circle-stick" ng-mousedown="onCircleMouseDown($event)" ng-mouseup="onCircleMouseUp($event)"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/index.js"></script>
+</body>
+
+
+
+</html>
