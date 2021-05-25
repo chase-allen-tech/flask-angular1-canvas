@@ -12,16 +12,19 @@ app.controller("myCtrl", function ($scope, $http) {
     ctx.translate(0, 0); // Set coordinate of the canvas
     var point_x = 0; // Track current circle coordinate
     var point_y = 0;
+    var selected_vector = null;
+    var selected_links = null;
 
     $scope.vector = []; // Vector that contain all node/list objects
     $scope.dragLine = [0, 0, 0, 0]; // Track line coordinates
+    $scope.is_move_mode = false;
 
     // Add a new vector to vector array and save result to server
     const addVector = (header, sym1, sym2, x1, y1, x2, y2) => {
         let item = { 'header': header, 'sym1': sym1, 'sym2': sym2, 'x1': x1, 'y1': y1, 'x2': x2, 'y2': y2 }
         $scope.vector.push(item);
         drawVector();
-        saveResult();
+        saveResult(item);
     }
 
     // Clear canvas to use and draw starting circle
@@ -113,8 +116,26 @@ app.controller("myCtrl", function ($scope, $http) {
             point_x = e.offsetX - 20;
             point_y = e.offsetY - 20;
         } else if (is_canvas_clicked) { // If drag with canvas click, then draw line
-            $scope.dragLine[2] = e.offsetX;
-            $scope.dragLine[3] = e.offsetY;
+            if($scope.is_move_mode) {
+                $scope.vector[$scope.vector.indexOf(selected_vector)].x1 = e.offsetX;
+                $scope.vector[$scope.vector.indexOf(selected_vector)].y1 = e.offsetY;
+
+                selected_links = $scope.vector.filter(vec => vec.header == 'Link' && (vec.sym1 == selected_vector.sym1 || vec.sym2 == selected_vector.sym1));
+                if(selected_links)
+                    selected_links.forEach(link => {
+                        if(selected_vector.sym1 == link.sym1) {
+                            $scope.vector[$scope.vector.indexOf(link)].x1 = e.offsetX;
+                            $scope.vector[$scope.vector.indexOf(link)].y1 = e.offsetY;
+                        } else {
+                            $scope.vector[$scope.vector.indexOf(link)].x2 = e.offsetX;
+                            $scope.vector[$scope.vector.indexOf(link)].y2 = e.offsetY;
+                        }
+                    });
+            } else {
+                $scope.dragLine[2] = e.offsetX;
+                $scope.dragLine[3] = e.offsetY;
+            }
+            
             drawVector();
         }
     }
@@ -145,23 +166,45 @@ app.controller("myCtrl", function ($scope, $http) {
             $scope.dragLine = [0, 0, 0, 0];
 
             // If both vertex are valid and there is no duplicate in vector, then add the link
-            if (node1 && node2 && $scope.vector.filter(vec => vec.sym1 == node1.sym1 && vec.sym2 == node2.sym1).length <= 0) {
+            if (node1 && node2 && node1 != node2 && $scope.vector.filter(vec => vec.sym1 == node1.sym1 && vec.sym2 == node2.sym1).length <= 0) {
                 addVector('Link', node1.sym1, node2.sym1, node1.x1, node1.y1, node2.x1, node2.y1);
             }
             drawVector();
+
+            if($scope.is_move_mode && selected_vector) {
+                updateResult(selected_vector);
+                if(selected_links)
+                    selected_links.forEach(element => {
+                        updateResult(element);
+                    });
+            }
+            selected_vector = null;
+            selected_links = null;
         }
     }
 
     // If mouse is pressed on canvas, then init first point
     $scope.onCanvasMouseDown = e => {
         is_canvas_clicked = true;
-        $scope.dragLine[0] = e.offsetX;
-        $scope.dragLine[1] = e.offsetY;
+        if($scope.is_move_mode) {
+            selected_vector = getVertex(e.offsetX, e.offsetY)
+        } else {
+            $scope.dragLine[0] = e.offsetX;
+            $scope.dragLine[1] = e.offsetY;
+        }
     }
 
     // Save the current last vector object to the server
-    const saveResult = () => {
-        $http.post(BASE_URL, { "data": JSON.stringify($scope.vector[$scope.vector.length - 1]) }, { headers: { 'Content-Type': 'application/json' } }).then(res => {
+    const saveResult = (data) => {
+        $http.post(BASE_URL, { "data": JSON.stringify(data) }, { headers: { 'Content-Type': 'application/json' } }).then(res => {
+            console.log(res.data.msg);
+        }, err => {
+            console.log(err);
+        });
+    }
+
+    const updateResult = (data) => {
+        $http.put(BASE_URL, { "data": JSON.stringify(data) }, { headers: { 'Content-Type': 'application/json' } }).then(res => {
             console.log(res.data.msg);
         }, err => {
             console.log(err);

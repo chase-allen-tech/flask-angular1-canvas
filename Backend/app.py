@@ -39,6 +39,17 @@ def post(): # Insert new vector data to DB
         
     return jsonify({'msg': msg})
 
+@app.route("/", methods=["PUT"])
+def put():
+    try:
+        data = json.loads(request.json['data'])
+        query = "UPDATE vectors SET x1=%d, y1=%d, x2=%d, y2=%d WHERE sym1='%s' AND sym2='%s'" % (data['x1'], data['y1'], data['x2'], data['y2'], data['sym1'], data['sym2'])
+        execQuery(query)
+        msg = 'Record successfully updated'
+    except Exception as e:
+        msg = "error in update opration"
+    return jsonify({'msg': msg})
+
 @app.route("/<string:sym1>/<string:sym2>", methods=['DELETE'])
 def delete(sym1, sym2): # Delete the current object with sym1 and sym2 identifier
     try:

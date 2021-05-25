@@ -36,6 +36,10 @@
                         <canvas class="myCanvas" class="mt-4" ng-mousedown="onCanvasMouseDown($event)" ng-mousemove="onMouseMove($event)" ng-mouseup="onCanvasMouseUp($event)" width="500px" height="500px"></canvas>
                         <div class="circle-stick" ng-mousedown="onCircleMouseDown($event)" ng-mouseup="onCircleMouseUp($event)"></div>
                     </div>
+                    <div class="form-group">
+                        <input type="checkbox" name='moveMode' id='moveMode' ng-model="is_move_mode">
+                        <label for="moveMode">Move Mode</label>
+                    </div>
                 </div>
             </div>
         </div>
