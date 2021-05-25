@@ -54,8 +54,8 @@ app.controller("myCtrl", function ($scope, $http) {
                 ctx.fill();
 
                 ctx.beginPath();
-                ctx.font = "30px arial";
-                ctx.fillStyle = "white";
+                ctx.font = "25px arial";
+                ctx.fillStyle = "black";
                 ctx.fill();
                 ctx.fillText(element.sym1, element.x1 - 10, element.y1 + 10);
             }
@@ -78,17 +78,19 @@ app.controller("myCtrl", function ($scope, $http) {
 
             if (inputs[0].toLowerCase() == 'node' && inputs.length == 1) { // In case of node
                 addVector('Node', String.fromCharCode(symbol_ascii++), 'null', parseInt(canvas.width * Math.random()), parseInt(canvas.height * Math.random()), 0, 0);
+            } else if(inputs[0].toLowerCase() == 'node' && inputs.length == 2) { // In case of node with node name
+                if($scope.vector.filter(vec => vec.sym1 == inputs[1]).length <= 0) {
+                    addVector('Node', inputs[1], 'null', parseInt(canvas.width * Math.random()), parseInt(canvas.height * Math.random()), 0, 0);
+                } else { alert("There exists same node name"); }
             } else if (inputs[0].toLowerCase() == 'link' && inputs.length == 3) { // In case of link
-                let in1 = inputs[1].toUpperCase(); // First vertex
-                let in2 = inputs[2].toUpperCase(); // Second vertex
+                let in1 = inputs[1]; //.toUpperCase(); // First vertex
+                let in2 = inputs[2]; //.toUpperCase(); // Second vertex
                 let vec1 = $scope.vector.filter(vec => vec.sym1 == in1) // First vector with first vertex
                 let vec2 = $scope.vector.filter(vec => vec.sym1 == in2) // Second vector with second vertex
                 if (inputs[1] != inputs[2] && vec1.length > 0 && vec2.length > 0 && $scope.vector.filter(vec => vec.sym1 == in1 && vec.sym2 == in2).length <= 0) { // If all inputs are valid and there is no duplicate in vector
                     addVector('Link', in1, in2, vec1[0].x1, vec1[0].y1, vec2[0].x1, vec2[0].y1);
-                }
-            } else {
-                alert("Input value is not Valid");
-            }
+                } else { alert("Input values are not valid"); }
+            } else { alert("Input value is not Valid"); }
         }
     }
 
